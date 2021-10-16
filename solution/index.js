@@ -15,9 +15,9 @@ module.exports = function (Homework) {
     const addPromise = promisify(add);
     const lessPromise = promisify(less);
 
-    return async (array, fn, initialValue, cb) => {
-        const lengthPromise = promisify(array.length);
-        const getPromise = promisify(array.get);
+    return async (asyncArray, fn, initialValue, cb) => {
+        const lengthPromise = promisify(asyncArray.length);
+        const getPromise = promisify(asyncArray.get);
         const funcPromise = promisify(fn);
 
         const arrayLength = await lengthPromise();
@@ -26,7 +26,7 @@ module.exports = function (Homework) {
         for (let i = 0; await lessPromise(i, arrayLength); await addPromise(i, 1)) {
             const arrItem = await getPromise();
 
-            accum = await funcPromise(accum, arrItem, i, array);
+            accum = await funcPromise(accum, arrItem, i, asyncArray);
         }
 
         cb(accum);
