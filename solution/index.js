@@ -1,34 +1,18 @@
 module.exports = function (Homework) {
 
-    function promisify(func) {
-        return function (...args) {
-            return new Promise((resolve, reject) => {
-                args.push((res => resolve(res)))
-
-                func.call(this, ...args);
-            })
+    const reduce  = async (array, fn, initialValue, cb) => {
+        const length = await new Promise(array.length);
+        for (
+            let i = 0;
+            await new Promise((resolve) => Homework.less(i, length, resolve));
+            i = await new Promise((resolve) => Homework.add(i, 1, resolve))
+        ) {
+            const currentValue = await new Promise((resolve) => array.get(i, resolve));
+            initialValue = await new Promise((resolve) => fn(initialValue, currentValue, i, array, resolve));
         }
+        cb(initialValue);
     }
-
-    const { add, less } = Homework;
-
-    const addPromise = promisify(add);
-    const lessPromise = promisify(less);
-
-    return async (array, fn, initialValue, cb) => {
-        const lengthPromise = promisify(array.length);
-        const getPromise = promisify(array.get);
-        const funcPromise = promisify(fn);
-
-        const arrayLength = await lengthPromise();
-        const accum = initialValue
-
-        for (let i = 0; await lessPromise(i, arrayLength); await addPromise(i, 1)) {
-            const arrItem = await getPromise();
-
-            accum = await funcPromise(accum, arrItem, i, array);
-        }
-
-        cb(accum);
+    return (array, fn, initialValue, cb) => {
+        return reduce(array, fn, initialValue, cb);
     }
 }
